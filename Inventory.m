@@ -257,5 +257,18 @@ classdef Inventory < handle
             tb = total_backlog(obj);
             obj.Log(end+1, :) = {obj.Time, obj.OnHand, tb, obj.RunningCost};
         end
+
+      %%  function fraction_order_received(obj)
+        %%    numbacklog = length(inventory.Backlog);
+          %  backlog = 0;
+           % fulfilled = length(obj.Fulfilled);
+            %for i = 1:fulfilled
+             %   x = obj.Fulfilled{j};
+              %   if x{1,i}.OriginalTime ~= x{1,i}.Time
+               %     backlog = backlog + 1;
+                %end
+            %end
+        end
+
     end
-end
+

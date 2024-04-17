@@ -17,21 +17,16 @@ L = 2;
 h = 0.05/7;
 
 % Reorder point.
-ROP = 50;
+ROP = 171;
 
 % Batch size.
-Q = 200;
+Q = 111;
 
 % How many samples of the simulation to run.
 NumSamples = 100;
 
 % Run each sample for this many days.
-MaxTime = 1000;
-
-%% Run simulation samples
-
-% Make this reproducible
-rng("default");
+MaxTime = 10;
 
 % Samples are stored in this cell array of Inventory objects
 InventorySamples = cell([NumSamples, 1]);
@@ -51,6 +46,125 @@ for SampleNum = 1:NumSamples
     run_until(inventory, MaxTime);
     InventorySamples{SampleNum} = inventory;
 end
+
+%% Run simulation samples
+
+% Fraction of orders backlogged
+numbacklog = zeros(1, NumSamples);
+backlog = zeros(1, NumSamples);
+fulfilled = zeros(1, NumSamples);
+TotalBacklog = zeros(1, NumSamples);
+TotalOrders = zeros(1, NumSamples);
+Fraction_of_Orders = zeros(1, NumSamples);
+
+for j = 1:NumSamples
+    inventory = InventorySamples{j};
+    numbacklog(1, j) = length(inventory.Backlog);
+    fulfilled(1, j) = length(inventory.Fulfilled);
+
+    for i = 1:fulfilled(1,j)
+      if inventory.Fulfilled{1,i}.OriginalTime ~= inventory.Fulfilled{1,i}.Time
+            backlog(1, j) = backlog(1, j) + 1;
+     end
+    end
+
+TotalBacklog(1, j) = numbacklog(1, j) + backlog(1, j);
+TotalOrders(1, j) = numbacklog(1, j) + length(inventory.Fulfilled);
+Fraction_of_Orders(1, j) = TotalBacklog(1, j)/TotalOrders(1, j);
+end
+
+
+fig1 = figure();
+t1 = tiledlayout(fig1, 1, 1);
+ax1 = nexttile(t1);
+Fraction_Histogram = histogram(ax1, Fraction_of_Orders, Normalization = "probability", BinMethod = "auto");
+title(ax1, "Fraction of Orders Backlogged");
+xlabel(ax1, "Fraction");
+ylabel(ax1, "Probability");
+
+
+% Fraction of days with non-zero backlog
+
+daysbacklogged = zeros(1, NumSamples);
+Fraction_of_Days = zeros(1, NumSamples);
+
+for j = 1:NumSamples
+    inventory = InventorySamples{j};
+    for i = 1:MaxTime
+        if inventory.Log{i, 3} > 0
+         daysbacklogged(1, j) = daysbacklogged(1, j) + 1;
+        end
+    end
+    Fraction_of_Days(1, j) = daysbacklogged(1, j)/10;
+end
+
+fig2 = figure();
+t2 = tiledlayout(fig2, 1, 1);
+ax2 = nexttile(t2);
+Fraction_of_Days_Histogram = histogram(ax2, Fraction_of_Days, Normalization = "probability", BinMethod = "auto");
+title(ax2, "Fraction of Days Backlogged");
+xlabel(ax2, "Fraction");
+ylabel(ax2, "Probability");
+
+%Delay time of orders that get backlogged
+lengthsoffulfilled = zeros(1, NumSamples);
+
+for j = 1:NumSamples
+    inventory = InventorySamples{j};
+    lengthsoffulfilled(j) = length(inventory.Fulfilled);
+end
+
+maxFulfilled = max(lengthsoffulfilled);
+DelayTime = zeros(NumSamples, maxFulfilled);
+
+for j = 1:NumSamples
+    inventory = InventorySamples{j};
+    for i = 1:length(inventory.Fulfilled)
+        DelayTime(j, i) = inventory.Fulfilled{1,i}.Time - inventory.Fulfilled{1,i}.OriginalTime;
+    end
+end
+
+DelayTimeVector = reshape(DelayTime, 1, NumSamples*maxFulfilled);
+DelayTimeVectorNoZeros = DelayTimeVector(DelayTimeVector ~= 0);
+
+fig3 = figure();
+t3 = tiledlayout(fig3, 1, 1);
+ax3 = nexttile(t3);
+Fraction_of_Days_Histogram = histogram(ax3, DelayTimeVectorNoZeros, Normalization = "count", BinMethod = "auto");
+title(ax3, "Delay Time");
+xlabel(ax3, "Delay Time");
+ylabel(ax3, "Count");
+
+
+
+% For days with a backlog, the total backlog amount
+
+Total_Backlog_Amount = zeros(NumSamples, MaxTime);
+
+for j = 1:NumSamples
+    inventory = InventorySamples{j};
+    for i = 1:MaxTime
+        if inventory.Log{i, 3} > 0
+         Total_Backlog_Amount(j, i) = inventory.Log{i, 3};
+        end
+    end
+end
+
+TotalBacklogVector = reshape(Total_Backlog_Amount, 1, NumSamples*MaxTime);
+TotalBacklogVectorNoZeros = TotalBacklogVector(TotalBacklogVector ~= 0);
+
+fig4 = figure();
+t4 = tiledlayout(fig4, 1, 1);
+ax4 = nexttile(t4);
+Fraction_of_Days_Histogram = histogram(ax4, TotalBacklogVectorNoZeros, Normalization = "count", BinMethod = "auto");
+title(ax4, "Total Backlog Amount");
+xlabel(ax4, "Total Amount");
+ylabel(ax4, "Count");
+
+
+% Make this reproducible
+rng("default");
+
 
 %% Collect statistics
 
