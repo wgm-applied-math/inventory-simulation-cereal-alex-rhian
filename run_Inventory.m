@@ -35,7 +35,7 @@ Q = 757;
 NumSamples = 100;
 
 % Run each sample for this many days.
-MaxTime = 1000;
+MaxTime = 100;
 
 %% Run simulation samples
 
