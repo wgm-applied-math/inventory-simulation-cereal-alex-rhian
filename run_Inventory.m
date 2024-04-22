@@ -11,16 +11,25 @@ K = 25.00;
 c = 3.00;
 
 % Lead time for production requests.
-L = 2;
+ randomnumber = rand;
+ if randomnumber < .1
+    L = 2;
+elseif randomnumber <.3 && randomnumber > .1
+    L = 3;
+elseif randomnumber < .7 && randomnumber > .3
+    L = 4;
+ elseif randomnumber > .7
+    L = 5;
+end
 
 % Holding cost per unit per day.
 h = 0.05/7;
 
-% Reorder point.
-ROP = 50;
+% Reorder point. %200
+ROP = 141;
 
-% Batch size.
-Q = 200;
+% Batch size. %1500
+Q = 757;
 
 % How many samples of the simulation to run.
 NumSamples = 100;
