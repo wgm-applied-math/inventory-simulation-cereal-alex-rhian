@@ -17,16 +17,16 @@ L = 2;
 h = 0.05/7;
 
 % Reorder point.
-ROP = 171;
+ROP = 141;
 
 % Batch size.
-Q = 111;
+Q = 757;
 
 % How many samples of the simulation to run.
 NumSamples = 100;
 
 % Run each sample for this many days.
-MaxTime = 10;
+MaxTime = 100;
 
 % Samples are stored in this cell array of Inventory objects
 InventorySamples = cell([NumSamples, 1]);
