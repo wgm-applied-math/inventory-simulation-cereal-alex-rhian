@@ -37,6 +37,25 @@ NumSamples = 100;
 % Run each sample for this many days.
 MaxTime = 100;
 
+% Samples are stored in this cell array of Inventory objects
+InventorySamples = cell([NumSamples, 1]);
+
+% Run samples of the simulation.
+% Log entries are recorded at the end of every day
+for SampleNum = 1:NumSamples
+    fprintf("Working on %d\n", SampleNum);
+    inventory = Inventory( ...
+        RequestCostPerBatch=K, ...
+        RequestCostPerUnit=c, ...
+        RequestLeadTime=L, ...
+        HoldingCostPerUnitPerDay=h, ...
+        ReorderPoint=ROP, ...
+        OnHand=Q, ...
+        RequestBatchSize=Q);
+    run_until(inventory, MaxTime);
+    InventorySamples{SampleNum} = inventory;
+end
+
 %% Run simulation samples
 
 % Fraction of orders backlogged
@@ -63,6 +82,7 @@ TotalOrders(1, j) = numbacklog(1, j) + length(inventory.Fulfilled);
 Fraction_of_Orders(1, j) = TotalBacklog(1, j)/TotalOrders(1, j);
 end
 
+%Mean value for fraction of orders backlogged is .1779
 
 fig1 = figure();
 t1 = tiledlayout(fig1, 1, 1);
@@ -87,6 +107,8 @@ for j = 1:NumSamples
     end
     Fraction_of_Days(1, j) = daysbacklogged(1, j)/10;
 end
+
+%Mean value is 1.628 days backlogged.
 
 fig2 = figure();
 t2 = tiledlayout(fig2, 1, 1);
@@ -117,6 +139,8 @@ end
 DelayTimeVector = reshape(DelayTime, 1, NumSamples*maxFulfilled);
 DelayTimeVectorNoZeros = DelayTimeVector(DelayTimeVector ~= 0);
 
+%Mean value of delay time is 1.2395.
+
 fig3 = figure();
 t3 = tiledlayout(fig3, 1, 1);
 ax3 = nexttile(t3);
@@ -143,6 +167,8 @@ end
 TotalBacklogVector = reshape(Total_Backlog_Amount, 1, NumSamples*MaxTime);
 TotalBacklogVectorNoZeros = TotalBacklogVector(TotalBacklogVector ~= 0);
 
+%Mean value of total backlog is 113.637
+
 fig4 = figure();
 t4 = tiledlayout(fig4, 1, 1);
 ax4 = nexttile(t4);
@@ -154,24 +180,7 @@ ylabel(ax4, "Count");
 % Make this reproducible
 rng("default");
 
-% Samples are stored in this cell array of Inventory objects
-InventorySamples = cell([NumSamples, 1]);
 
-% Run samples of the simulation.
-% Log entries are recorded at the end of every day
-for SampleNum = 1:NumSamples
-    fprintf("Working on %d\n", SampleNum);
-    inventory = Inventory( ...
-        RequestCostPerBatch=K, ...
-        RequestCostPerUnit=c, ...
-        RequestLeadTime=L, ...
-        HoldingCostPerUnitPerDay=h, ...
-        ReorderPoint=ROP, ...
-        OnHand=Q, ...
-        RequestBatchSize=Q);
-    run_until(inventory, MaxTime);
-    InventorySamples{SampleNum} = inventory;
-end
 
 %% Collect statistics
 
@@ -182,6 +191,8 @@ TotalCosts = cellfun(@(i) i.RunningCost, InventorySamples);
 % that doesn't depend directly on how many time steps the samples run for.
 meanDailyCost = mean(TotalCosts/MaxTime);
 fprintf("Mean daily cost: %f\n", meanDailyCost);
+
+%The mean daily cost is $245.04
 
 %% Make pictures
 
