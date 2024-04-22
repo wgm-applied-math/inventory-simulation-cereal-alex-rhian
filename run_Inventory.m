@@ -130,7 +130,7 @@ DelayTimeVectorNoZeros = DelayTimeVector(DelayTimeVector ~= 0);
 fig3 = figure();
 t3 = tiledlayout(fig3, 1, 1);
 ax3 = nexttile(t3);
-Fraction_of_Days_Histogram = histogram(ax3, DelayTimeVectorNoZeros, Normalization = "count", BinMethod = "auto");
+Fraction_of_Days_Histogram = histogram(ax3, DelayTimeVectorNoZeros, Normalization = "probability", BinMethod = "auto");
 title(ax3, "Delay Time");
 xlabel(ax3, "Delay Time");
 ylabel(ax3, "Count");
