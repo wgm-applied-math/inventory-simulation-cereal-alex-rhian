@@ -105,7 +105,7 @@ for j = 1:NumSamples
          daysbacklogged(1, j) = daysbacklogged(1, j) + 1;
         end
     end
-    Fraction_of_Days(1, j) = daysbacklogged(1, j)/10;
+    Fraction_of_Days(1, j) = daysbacklogged(1, j)/MaxTime;
 end
 
 %Mean value is 1.628 days backlogged.
