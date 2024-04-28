@@ -82,6 +82,9 @@ TotalOrders(1, j) = numbacklog(1, j) + length(inventory.Fulfilled);
 Fraction_of_Orders(1, j) = TotalBacklog(1, j)/TotalOrders(1, j);
 end
 
+meanFracBacklog = mean(Fraction_of_Orders);
+fprintf("Mean fraction of orders that get backlogged: %f\n", meanFracBacklog);
+
 %Mean value for fraction of orders backlogged is .1779
 
 fig1 = figure();
@@ -105,10 +108,12 @@ for j = 1:NumSamples
          daysbacklogged(1, j) = daysbacklogged(1, j) + 1;
         end
     end
-    Fraction_of_Days(1, j) = daysbacklogged(1, j)/10;
+    Fraction_of_Days(1, j) = daysbacklogged(1, j)/MaxTime;
 end
 
-%Mean value is 1.628 days backlogged.
+meanFracDaysBacklog = mean(Fraction_of_Days);
+fprintf("Mean fraction of days with a non-zero backlog: %f\n", meanFracDaysBacklog);
+
 
 fig2 = figure();
 t2 = tiledlayout(fig2, 1, 1);
@@ -139,7 +144,8 @@ end
 DelayTimeVector = reshape(DelayTime, 1, NumSamples*maxFulfilled);
 DelayTimeVectorNoZeros = DelayTimeVector(DelayTimeVector ~= 0);
 
-%Mean value of delay time is 1.2395.
+meanDelayTime = mean(DelayTimeVectorNoZeros);
+fprintf("Mean delay time of orders that get backlogged: %f\n", meanDelayTime);
 
 fig3 = figure();
 t3 = tiledlayout(fig3, 1, 1);
@@ -147,7 +153,7 @@ ax3 = nexttile(t3);
 Fraction_of_Days_Histogram = histogram(ax3, DelayTimeVectorNoZeros, Normalization = "probability", BinMethod = "auto");
 title(ax3, "Delay Time");
 xlabel(ax3, "Delay Time");
-ylabel(ax3, "Count");
+ylabel(ax3, "Probability");
 
 
 
@@ -167,15 +173,16 @@ end
 TotalBacklogVector = reshape(Total_Backlog_Amount, 1, NumSamples*MaxTime);
 TotalBacklogVectorNoZeros = TotalBacklogVector(TotalBacklogVector ~= 0);
 
-%Mean value of total backlog is 113.637
+meanTotalBacklog = mean(TotalBacklogVectorNoZeros);
+fprintf("Mean total backlog amount: %f\n", meanTotalBacklog);
 
 fig4 = figure();
 t4 = tiledlayout(fig4, 1, 1);
 ax4 = nexttile(t4);
-Fraction_of_Days_Histogram = histogram(ax4, TotalBacklogVectorNoZeros, Normalization = "count", BinMethod = "auto");
+Fraction_of_Days_Histogram = histogram(ax4, TotalBacklogVectorNoZeros, Normalization = "probability", BinMethod = "auto");
 title(ax4, "Total Backlog Amount");
 xlabel(ax4, "Total Amount");
-ylabel(ax4, "Count");
+ylabel(ax4, "Probability");
 
 % Make this reproducible
 rng("default");
