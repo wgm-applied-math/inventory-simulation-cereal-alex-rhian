@@ -26,10 +26,10 @@ end
 h = 0.05/7;
 
 % Reorder point. %200
-ROP = 141;
+ROP = 210;
 
 % Batch size. %1500
-Q = 757;
+Q = 1500;
 
 % How many samples of the simulation to run.
 NumSamples = 100;
