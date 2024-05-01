@@ -25,14 +25,14 @@ end
 % Holding cost per unit per day.
 h = 0.05/7;
 
-% Reorder point. %200
+% Reorder point.
 ROP = 210;
 
-% Batch size. %1500
+% Batch size. 
 Q = 1500;
 
 % How many samples of the simulation to run.
-NumSamples = 100;
+NumSamples = 1000;
 
 % Run each sample for this many days.
 MaxTime = 100;
