@@ -23,7 +23,7 @@ ROP = 141;
 Q = 757;
 
 % How many samples of the simulation to run.
-NumSamples = 100;
+NumSamples = 1000;
 
 % Run each sample for this many days.
 MaxTime = 100;
